@@ -25,10 +25,6 @@ class ConflictException extends ServerException {}
 
 class InternalServerErrorException extends ServerException {}
 
-class NoInternetConnectionException extends ServerException {
-
-}
-
 class OffLineException implements Exception {}
 
 class EmptyCacheException implements Exception {}

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/io.dart';
-import 'package:http/io_client.dart';
 import 'package:paymob_payment/core/api/api_consumer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -15,16 +14,11 @@ class DioConsumer implements ApiConsumer {
   final Dio dio;
 
   DioConsumer({required this.dio}) {
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
-    final context = SecurityContext.defaultContext;
-    context.allowLegacyUnsafeRenegotiation = true;
-    final httpClient = HttpClient(context: context);
-    final client = IOClient(httpClient);
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+          final client = HttpClient();
+          client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+          return client;
+        };
     dio.options
       ..baseUrl = EndPoints.baseUrl
       ..responseType = ResponseType.plain
@@ -54,7 +48,7 @@ class DioConsumer implements ApiConsumer {
         debugPrint('response.data ${response.data}');
         return '';
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       debugPrint('error response ${error.response}');
       _handleDioError(error);
     }
@@ -77,7 +71,7 @@ class DioConsumer implements ApiConsumer {
         debugPrint('response.data ${response.data}');
         return '';
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       debugPrint('error response ${error.response!.data['error_description']}');
       _handleDioError(error);
     }
@@ -101,7 +95,7 @@ class DioConsumer implements ApiConsumer {
         debugPrint('response.data ${response.data}');
         return '';
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       debugPrint('error response ${error.response}');
       _handleDioError(error);
     }
@@ -124,20 +118,20 @@ class DioConsumer implements ApiConsumer {
         debugPrint('response.data ${response.data}');
         return '';
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       debugPrint('error response ${error.response}');
       _handleDioError(error);
     }
   }
 }
 
-dynamic _handleDioError(DioError error) {
+dynamic _handleDioError(DioException error) {
   switch (error.type) {
-    case DioErrorType.connectionTimeout:
-    case DioErrorType.sendTimeout:
-    case DioErrorType.receiveTimeout:
+    case  DioExceptionType.connectionTimeout:
+    case DioExceptionType.sendTimeout:
+    case DioExceptionType.receiveTimeout:
       throw  FetchDataException();
-    case DioErrorType.badResponse:
+    case DioExceptionType.badResponse:
       switch (error.response?.statusCode) {
         case StatusCode.badRequest:
           throw  BadRequestException();
@@ -154,7 +148,7 @@ dynamic _handleDioError(DioError error) {
           throw  RedirectException();
       }
       break;
-    case DioErrorType.cancel:
+    case DioExceptionType.cancel:
       break;
     default:
       throw  UnexpectedException();
