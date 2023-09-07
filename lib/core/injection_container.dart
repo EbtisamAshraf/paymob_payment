@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:paymob_payment/core/api/api_consumer.dart';
 import 'package:paymob_payment/core/api/app_interceptors.dart';
 import 'package:paymob_payment/core/api/dio_consumer.dart';
@@ -39,7 +39,7 @@ Future<void> init() async {
   // external
   // final sharedPreferences = await SharedPreferences.getInstance();
   // sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton(() => http.Client());
+  // sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => InternetConnectionChecker());
   sl.registerLazySingleton(() => AppInterceptors());

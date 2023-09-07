@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:paymob_payment/core/api/api_consumer.dart';
 import 'package:paymob_payment/core/api/end_points.dart';
 import 'package:paymob_payment/features/payment/data/models/param.dart';
-import 'package:paymob_payment/features/payment/data/models/wallet_pay_model.dart';
 
 abstract class PaymentRemoteDataSource {
   Future<String> getFirstToken(String apiKey);
